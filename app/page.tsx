@@ -203,16 +203,24 @@ export default function Page() {
   return (
     <div className="flex h-screen w-screen overflow-hidden" style={{ background: 'oklch(0.05 0.006 240)' }}>
       <div className="flex-1 relative overflow-hidden min-w-0">
-        {/* Mobile: branding */}
-        <div className="lg:hidden absolute top-3 left-4 z-10 pointer-events-none">
-          <span className="text-base leading-none" style={{ fontFamily: 'var(--font-unifraktur)', color: 'var(--foreground)' }}>Noise</span>
+        {/* Branding — mobile only */}
+        <div className="lg:hidden absolute top-4 left-4 z-10 flex items-baseline gap-2" style={{ padding: 6 }}>
+          <span style={{ fontFamily: 'var(--font-unifraktur)', fontSize: 24, color: 'var(--foreground)', lineHeight: 1 }}>Noise</span>
+          <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>dither studio</span>
         </div>
-        {/* Mobile: settings button */}
+
+        {/* Settings toggle — mobile only */}
         <button
           onClick={() => setSidebarOpen(true)}
-          className="lg:hidden absolute top-2.5 right-3 z-10 w-9 h-9 flex items-center justify-center rounded border border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-sm opacity-70 hover:opacity-100 transition-opacity"
+          className="lg:hidden absolute top-4 right-4 z-10 flex items-center justify-center rounded-lg"
+          style={{
+            width: 36, height: 36,
+            background: 'var(--panel)',
+            border: '1px solid var(--border)',
+            color: 'var(--muted-foreground)',
+          }}
         >
-          <Settings size={14} />
+          <Settings size={15} />
         </button>
         <a
           href="https://kjellr.com"
