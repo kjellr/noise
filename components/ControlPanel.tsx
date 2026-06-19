@@ -33,7 +33,7 @@ function Section({ title, children, extra }: { title: string; children: React.Re
       <div className="flex items-center justify-between hover:bg-[var(--accent)]/20 transition-colors">
         <button
           onClick={() => setOpen(o => !o)}
-          className="flex-1 flex items-center justify-between px-3 lg:px-4 py-2 lg:py-2.5 text-left"
+          className="flex-1 flex items-center justify-between px-3 lg:px-4 py-4 lg:py-3 text-left"
         >
           <span className="font-mono text-[9px] lg:text-[10px] tracking-widest uppercase text-[var(--muted-foreground)]">{title}</span>
           <span className="font-mono text-[10px] text-[var(--muted-foreground)]/40 ml-2">{open ? '−' : '+'}</span>
@@ -86,7 +86,7 @@ export default function ControlPanel({
   }, [onAlgorithmChange])
 
   return (
-    <div className="flex flex-col h-full w-[280px] lg:w-[312px] bg-[var(--card)] border-l border-[var(--border)] overflow-y-auto">
+    <div className="flex flex-col h-full w-[90vw] lg:w-[312px] bg-[var(--card)] border-l border-[var(--border)] overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between px-3 lg:px-4 py-3 lg:py-4 border-b border-[var(--border)] shrink-0">
         <div className="hidden lg:block">
@@ -103,7 +103,10 @@ export default function ControlPanel({
             <span className="hidden lg:inline">Export</span>
           </button>
           {showClose && (
-            <button onClick={onClose} className="lg:hidden opacity-50 hover:opacity-100 transition-opacity p-1">
+            <button
+              onClick={onClose}
+              className="lg:hidden w-11 h-11 flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity"
+            >
               <X size={15} />
             </button>
           )}
@@ -137,7 +140,7 @@ export default function ControlPanel({
                   ref={el => { if (el) buttonRefs.current.set(a.id, el) }}
                   onClick={() => handleAlgorithmChange(a.id)}
                   className={[
-                    'relative w-full text-left flex items-center justify-between px-2 py-1.5 rounded-sm transition-colors font-mono text-[11px] lg:text-xs',
+                    'relative w-full text-left flex items-center justify-between px-2 min-h-[44px] lg:min-h-0 lg:py-1.5 rounded-sm transition-colors font-mono text-[11px] lg:text-xs',
                     algorithmId === a.id
                       ? 'text-[var(--primary)]'
                       : 'text-[var(--foreground)]/50 hover:text-[var(--foreground)]/80'
@@ -190,7 +193,7 @@ export default function ControlPanel({
                   type="color"
                   value={val as string}
                   onChange={e => (handler as (v: string) => void)(e.target.value)}
-                  className="h-7 flex-1 rounded border border-[var(--border)] bg-transparent cursor-pointer"
+                  className="h-11 lg:h-7 flex-1 rounded border border-[var(--border)] bg-transparent cursor-pointer"
                 />
               </div>
             ))}
@@ -202,12 +205,16 @@ export default function ControlPanel({
       <Section
         title="Parameters"
         extra={
-          <button onClick={onResetParams} title="Reset" className="opacity-30 hover:opacity-80 transition-opacity">
+          <button
+            onClick={onResetParams}
+            title="Reset"
+            className="w-11 h-11 lg:w-7 lg:h-7 flex items-center justify-center opacity-30 hover:opacity-80 transition-opacity"
+          >
             <RotateCcw size={10} />
           </button>
         }
       >
-        <div className="space-y-4" style={{ opacity: fading ? 0 : 1, transition: 'opacity 180ms' }}>
+        <div className="space-y-6 lg:space-y-4" style={{ opacity: fading ? 0 : 1, transition: 'opacity 180ms' }}>
           {algo.params.map(param => (
             <div key={param.key}>
               {param.type === 'range' && (
@@ -220,13 +227,15 @@ export default function ControlPanel({
                         : params[param.key]}{param.unit ?? ''}
                     </span>
                   </div>
-                  <input
-                    type="range"
-                    min={param.min} max={param.max} step={param.step}
-                    value={params[param.key] as number}
-                    onChange={e => onParamChange(param.key, parseFloat(e.target.value))}
-                    className="w-full"
-                  />
+                  <div className="py-2 lg:py-0">
+                    <input
+                      type="range"
+                      min={param.min} max={param.max} step={param.step}
+                      value={params[param.key] as number}
+                      onChange={e => onParamChange(param.key, parseFloat(e.target.value))}
+                      className="w-full"
+                    />
+                  </div>
                   <div className="flex justify-between mt-1">
                     <span className="font-mono text-[9px] text-[var(--muted-foreground)]/30">{param.min}</span>
                     <span className="font-mono text-[9px] text-[var(--muted-foreground)]/30">{param.max}{param.unit ?? ''}</span>
