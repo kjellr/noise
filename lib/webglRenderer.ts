@@ -24,11 +24,21 @@ uniform int u_n;
 uniform int u_stride;
 uniform int u_scale;
 uniform float u_thresh;
+uniform float u_contrast;
+uniform float u_brightness;
+uniform float u_saturation;
 uniform int u_palN;
 uniform vec3 u_pal[16];
 uniform float u_mat[64];
 void main() {
   vec3 src = texture(u_src, v_uv).rgb;
+  // Saturation
+  float lum = dot(src, vec3(0.299, 0.587, 0.114));
+  src = mix(vec3(lum), src, u_saturation);
+  // Brightness
+  src = clamp(src + u_brightness, 0.0, 1.0);
+  // Contrast
+  src = clamp((src - 0.5) * u_contrast + 0.5, 0.0, 1.0);
   ivec2 px = ivec2(v_uv * u_srcSize);
   int bx = (px.x / u_scale) % u_n;
   int by = (px.y / u_scale) % u_n;
@@ -54,20 +64,32 @@ uniform sampler2D u_src;
 uniform vec2 u_srcSize;
 uniform int u_scale;
 uniform float u_thresh;
+uniform float u_angle;
+uniform float u_lineWidth;
+uniform float u_brightness;
+uniform float u_saturation;
 uniform int u_palN;
 uniform vec3 u_pal[16];
 void main() {
   vec3 src = texture(u_src, v_uv).rgb;
   float lum = dot(src, vec3(0.299, 0.587, 0.114));
+  src = mix(vec3(lum), src, u_saturation);
+  src = clamp(src + u_brightness, 0.0, 1.0);
+  lum = dot(src, vec3(0.299, 0.587, 0.114));
   float adj = clamp(lum + (u_thresh - 0.5), 0.0, 1.0);
-  ivec2 px = ivec2(v_uv * u_srcSize);
+  vec2 px = v_uv * u_srcSize;
+  float cosA = cos(u_angle);
+  float sinA = sin(u_angle);
   float s = float(u_scale);
-  bool diagA = mod(float(px.x + px.y), s) < 1.0;
-  bool diagB = mod(float(px.x - px.y + int(s) * 1000), s) < 1.0;
+  float lw = u_lineWidth;
+  float d1 =  px.x * cosA + px.y * sinA;
+  float d2 = -px.x * sinA + px.y * cosA;
+  bool diagA = mod(d1 + s * 1000.0, s) < lw;
+  bool diagB = mod(d2 + s * 1000.0, s) < lw;
   bool isBlack;
   if (adj < 0.25) isBlack = diagA || diagB;
   else if (adj < 0.5) isBlack = diagA;
-  else if (adj < 0.75) isBlack = mod(float(px.x + px.y), s * 2.0) < 1.0;
+  else if (adj < 0.75) isBlack = mod(d1 + s * 2000.0, s * 2.0) < lw;
   else isBlack = false;
   vec3 color = isBlack ? u_pal[0] / 255.0 : u_pal[u_palN - 1] / 255.0;
   o = vec4(color, 1.0);
@@ -81,6 +103,9 @@ uniform sampler2D u_src;
 uniform vec2 u_srcSize;
 uniform float u_scale;
 uniform float u_angle;
+uniform float u_contrast;
+uniform float u_brightness;
+uniform float u_saturation;
 uniform int u_palN;
 uniform vec3 u_pal[16];
 void main() {
@@ -101,7 +126,13 @@ void main() {
                           -nCenter_rot.x * sinA + nCenter_rot.y * cosA);
       vec2 nUV = clamp(nCenter / u_srcSize, 0.0, 1.0);
       vec3 nSrc = texture(u_src, nUV).rgb;
-      float lum = 1.0 - dot(nSrc, vec3(0.299, 0.587, 0.114));
+      // Apply preprocessing to sampled cell color
+      float nLumRaw = dot(nSrc, vec3(0.299, 0.587, 0.114));
+      nSrc = mix(vec3(nLumRaw), nSrc, u_saturation);
+      nSrc = clamp(nSrc + u_brightness, 0.0, 1.0);
+      float rawLum = dot(nSrc, vec3(0.299, 0.587, 0.114));
+      float contrastLum = clamp((rawLum - 0.5) * u_contrast + 0.5, 0.0, 1.0);
+      float lum = 1.0 - contrastLum;
       float radius = sqrt(lum) * u_scale * 0.5;
       if (length(px - nCenter) <= radius) inDot = true;
     }
@@ -264,9 +295,16 @@ export class WebGLRenderer {
     } else if (algorithmId === 'hatch') {
       gl.uniform1i(gl.getUniformLocation(prog, 'u_scale'), params.scale as number || 4)
       gl.uniform1f(gl.getUniformLocation(prog, 'u_thresh'), params.threshold as number ?? 0.5)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_angle'), ((params.angle as number) ?? 45) * Math.PI / 180)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_lineWidth'), params.lineWidth as number ?? 1)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_brightness'), params.brightness as number ?? 0)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_saturation'), params.saturation as number ?? 1)
     } else if (algorithmId === 'halftone') {
       gl.uniform1f(gl.getUniformLocation(prog, 'u_scale'), params.scale as number || 8)
       gl.uniform1f(gl.getUniformLocation(prog, 'u_angle'), ((params.angle as number) ?? 45) * Math.PI / 180)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_contrast'), params.contrast as number ?? 1)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_brightness'), params.brightness as number ?? 0)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_saturation'), params.saturation as number ?? 1)
     }
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
