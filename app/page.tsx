@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Settings } from 'lucide-react'
+import { ExternalLink, Settings } from 'lucide-react'
 import DitherCanvas from '@/components/DitherCanvas'
 import ControlPanel from '@/components/ControlPanel'
 import { type AlgorithmId, getDefaultParams } from '@/lib/algorithms/index'
@@ -214,6 +214,31 @@ export default function Page() {
         >
           <Settings size={14} />
         </button>
+        <a
+          href="https://kjellr.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 absolute bottom-6 left-6 text-xs font-mono px-2.5 py-1.5 rounded transition-all"
+          style={{
+            color: 'var(--muted-foreground)',
+            background: 'var(--panel)',
+            border: '1px solid var(--border)',
+            zIndex: 10,
+          }}
+          onMouseEnter={e => {
+            const el = e.currentTarget
+            el.style.color = '#ffffff'
+            el.style.borderColor = 'oklch(0.74 0.11 163 / 40%)'
+          }}
+          onMouseLeave={e => {
+            const el = e.currentTarget
+            el.style.color = 'var(--muted-foreground)'
+            el.style.borderColor = 'var(--border)'
+          }}
+        >
+          Built by Kjell Reigstad
+          <ExternalLink size={11} />
+        </a>
         <DitherCanvas
           imageData={outputImageData}
           isProcessing={isProcessing}
