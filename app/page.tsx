@@ -8,9 +8,9 @@ import { type PaletteId, getPalette } from '@/lib/palettes'
 import { WEBGL_ALGORITHMS } from '@/lib/webglRenderer'
 
 export default function Page() {
-  const [algorithmId, setAlgorithmId] = useState<AlgorithmId>('bayer2')
+  const [algorithmId, setAlgorithmId] = useState<AlgorithmId>('riemersma')
   const [params, setParams] = useState<Record<string, number | boolean>>(
-    () => getDefaultParams('bayer2')
+    () => getDefaultParams('riemersma')
   )
   const [paletteId, setPaletteId] = useState<PaletteId>('mono')
   const [colorA, setColorA] = useState('#ffffff')
@@ -31,8 +31,8 @@ export default function Page() {
   // Source refs — avoid stale closures in RAF loop
   const sourceBitmapRef = useRef<ImageBitmap | null>(null)
   const sourceVideoRef = useRef<HTMLVideoElement | null>(null)
-  const algorithmIdRef = useRef<AlgorithmId>('bayer2')
-  const paramsRef = useRef<Record<string, number | boolean>>(getDefaultParams('bayer2'))
+  const algorithmIdRef = useRef<AlgorithmId>('riemersma')
+  const paramsRef = useRef<Record<string, number | boolean>>(getDefaultParams('riemersma'))
   const paletteIdRef = useRef<PaletteId>('mono')
   const colorARef = useRef('#ffffff')
   const colorBRef = useRef('#000000')
