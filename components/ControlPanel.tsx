@@ -67,7 +67,7 @@ export default function ControlPanel({
 }: Props) {
   const listRef = useRef<HTMLDivElement>(null)
   const buttonRefs = useRef<Map<AlgorithmId, HTMLButtonElement>>(new Map())
-  const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 32 })
+  const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0 })
   const [fading, setFading] = useState(false)
 
   const algo = ALGORITHMS.find(a => a.id === algorithmId)!
@@ -113,10 +113,21 @@ export default function ControlPanel({
       {/* Algorithm selector */}
       <div className="px-3 lg:px-4 py-3 border-b border-[var(--border)] shrink-0">
         <div ref={listRef} className="relative">
-          <div
-            className="absolute left-0 right-0 rounded-sm bg-[var(--primary)]/8 border border-[var(--primary)]/15 transition-all duration-200 pointer-events-none"
-            style={indicatorStyle}
-          />
+          {indicatorStyle.height > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                left: 0, right: 0,
+                top: indicatorStyle.top,
+                height: indicatorStyle.height,
+                background: 'var(--mint-dim)',
+                border: '1px solid var(--border)',
+                borderRadius: 4,
+                transition: 'top 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
           {CATEGORIES.map(cat => (
             <div key={cat.id} className="mb-1 last:mb-0">
               <div className="font-mono text-[8px] lg:text-[9px] tracking-widest uppercase text-[var(--muted-foreground)]/30 px-2 pt-2 pb-1">{cat.label}</div>
