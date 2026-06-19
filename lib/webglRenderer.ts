@@ -292,6 +292,9 @@ export class WebGLRenderer {
       gl.uniform1i(gl.getUniformLocation(prog, 'u_stride'), n)
       gl.uniform1i(gl.getUniformLocation(prog, 'u_scale'), params.scale as number || 1)
       gl.uniform1f(gl.getUniformLocation(prog, 'u_thresh'), params.threshold as number ?? 0.5)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_contrast'), params.contrast as number ?? 1)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_brightness'), params.brightness as number ?? 0)
+      gl.uniform1f(gl.getUniformLocation(prog, 'u_saturation'), params.saturation as number ?? 1)
     } else if (algorithmId === 'hatch') {
       gl.uniform1i(gl.getUniformLocation(prog, 'u_scale'), params.scale as number || 4)
       gl.uniform1f(gl.getUniformLocation(prog, 'u_thresh'), params.threshold as number ?? 0.5)
